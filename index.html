@@ -47,13 +47,21 @@
     }
     .copy-btn:hover { background: var(--primary-hover); }
 
+    /* 広告表示エリア */
+    .ad-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 24px 0;
+      min-height: 100px;
+      overflow: hidden;
+    }
+
     /* SEO解説コンテンツ */
     .content-box { font-size: 0.85rem; color: #475569; }
     .content-box h2 { font-size: 1rem; color: #1e293b; margin: 16px 0 8px; }
     .content-box ul { padding-left: 20px; margin-bottom: 12px; }
     .content-box li { margin-bottom: 4px; }
-    
-    .ad-space { background: #e2e8f0; border-radius: 8px; min-height: 100px; display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.8rem; margin: 20px 0; text-align: center; }
   </style>
 </head>
 <body>
@@ -119,10 +127,11 @@
     <button class="copy-btn" id="copyBtn">結果をクリップボードにコピー</button>
   </main>
 
-  <!-- 広告挿入枠（忍者AdMaxなどのタグをここに貼り付け） -->
-  <div class="ad-space">
-    <!-- ここに広告スクリプトを設置 -->
-    広告スペース
+  <!-- 忍者AdMax広告エリア -->
+  <div class="ad-container">
+    <!-- admax -->
+    <script src="https://adm.shinobi.jp/s/834438d30cf5170af175302bc084e665"></script>
+    <!-- admax -->
   </div>
 
   <section class="card content-box">
@@ -165,7 +174,6 @@
     let startMinutes = sh * 60 + sm;
     let endMinutes = eh * 60 + em;
 
-    // 日をまたぐ場合（例: 22:00〜03:00）
     if (endMinutes < startMinutes) {
       endMinutes += 24 * 60;
     }
@@ -173,7 +181,6 @@
     const totalMinutes = endMinutes - startMinutes;
     const totalHours = totalMinutes / 60;
 
-    // 休憩時間の決定
     let breakMinutes = 0;
     const mode = breakModeSelect.value;
     if (mode === 'auto') {
@@ -191,27 +198,23 @@
     const actualWorkMinutes = Math.max(0, totalMinutes - breakMinutes);
     const actualWorkHours = actualWorkMinutes / 60;
 
-    // 深夜労働時間（22:00〜翌5:00）の計算
     let nightMinutes = 0;
     for (let m = startMinutes; m < endMinutes; m++) {
       const normalizedMinute = m % (24 * 60);
-      // 22:00(1320分)以降 または 05:00(300分)未満
       if (normalizedMinute >= 22 * 60 || normalizedMinute < 5 * 60) {
         nightMinutes++;
       }
     }
-    // 休憩時間は昼夜均等に引かれる前提の簡易近似
+
     const nightRatio = totalMinutes > 0 ? (nightMinutes / totalMinutes) : 0;
     const actualNightMinutes = Math.max(0, nightMinutes - (breakMinutes * nightRatio));
     const actualNightHours = actualNightMinutes / 60;
     const normalWorkHours = actualWorkHours - actualNightHours;
 
-    // 給与計算（通常時給 + 深夜割増25%）
     const basePay = normalWorkHours * rate;
     const nightPay = actualNightHours * (rate * 1.25);
     const totalPay = Math.round(basePay + nightPay);
 
-    // 画面反映
     totalTimeDisplay.textContent = `${totalHours.toFixed(1)} 時間`;
     breakTimeDisplay.textContent = `${(breakMinutes / 60).toFixed(1)} 時間`;
     workTimeDisplay.textContent = `${actualWorkHours.toFixed(1)} 時間`;
@@ -231,7 +234,6 @@
     });
   });
 
-  // 初回計算
   calculate();
 </script>
 
